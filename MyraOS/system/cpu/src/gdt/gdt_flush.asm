@@ -1,0 +1,26 @@
+[bits 32]
+
+global _gdt_flush
+global _tss_flush
+
+; arg: ptr to gdt_ptr
+_gdt_flush:
+    mov eax, [esp+4]            
+    lgdt [eax]
+
+    mov   ax, 0x10
+    mov   ds, ax
+    mov   es, ax
+    mov   fs, ax
+    mov   gs, ax
+    mov   ss, ax
+
+    jmp   0x08:.flush
+.flush:
+    ret
+
+ ; arg: selector
+_tss_flush:           
+    mov   ax, [esp+4]
+    ltr   ax
+    ret
