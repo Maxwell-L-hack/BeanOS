@@ -1,16 +1,16 @@
-#include "../drivers/ports.h"
+#include "../drivers/screen.h"
+#include "util.h"
 
 void main() {
-    port_byte_out(ox3d4, 14);
-    int position = port_byte_in(0x3d5);
-    position = position << 8;
+    clear_screen();
 
-    port_byte_out(0x3d4, 15);
-    position += port_byte_in(0x3d5);
+    int i = 0;
+    for (i = 0; i < 24; i++) {
+        char str[255];
+        int_to_ascii(i, str);
+        kprint_at(str, 0, i);
+    }
 
-    int offset_from_vga = position * 2;
-
-    char *vga = 0xb8000;
-    vga[offset_from_vga] = 'My first video output';
-    vga[offset_from_vga+1] = 0x0f;
+    kprint_at("This text makes the kernel scroll.  row 0 will disappear. ", 60, 24);
+    kprint("due to this text, the kernel will scroll again, and row 1 will disappear.");
 }

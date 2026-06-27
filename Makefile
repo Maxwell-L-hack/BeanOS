@@ -1,11 +1,11 @@
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c)
-HEADERS = $(wildcard kernel/*.h drivers/*.h)
+C_SOURCES = $(wildcard Kernel/*.c drivers/*.c)
+HEADERS = $(wildcard Kernel/*.h drivers/*.h)
 OBJ = ${C_SOURCES:.c=.o}
 CC = i386-elf-gcc
 GDB = i386-elf-gdb
 CFLAGS = -g
 
-os.bin: boot/boot.bin Kernel/kernel.bin
+os.bin: boot/boot.bin kernel.bin
 	cat $^ > os.bin
 kernel.bin: boot/kernelentry.o ${OBJ}
 	i386-elf-ld -o $@ -Ttext 0x1000 $^ --oformat binary
@@ -13,11 +13,17 @@ kernel.bin: boot/kernelentry.o ${OBJ}
 kernel.elf: boot/kernelentry.o ${OBJ}
 	i386-elf-ld -o $@ -Ttext 0x1000 $^
 
+boot/boot.bin: boot/32main.asm
+	nasm -I boot $< -f bin -o $@
+
+boot/kernelentry.o: boot/kernelentry.asm
+	nasm $< -f elf32 -o $@
+
 run: os.bin	
-	qemu-x86 -fda os.bin
+	qemu-system-i386 -fda os.bin
 
 debug: os.bin kernel.elf
-	qemu-x86 -s -fda os.bin &
+	qemu-system-i386 -s -fda os.bin &
 	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
 
 %.o: %.c ${HEADERS}
@@ -25,3 +31,10 @@ debug: os.bin kernel.elf
 
 %.o: %.asm
 	nasm $< -f bin -o $@
+
+%.bin: %.asm
+	nasm $< -f bin -o $@
+
+clean:
+	rm -rf *.bin *.dis *.o os.bin *.elf
+	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o
