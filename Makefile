@@ -1,6 +1,6 @@
-C_SOURCES = $(wildcard Kernel/*.c drivers/*.c)
-HEADERS = $(wildcard Kernel/*.h drivers/*.h)
-OBJ = ${C_SOURCES:.c=.o}
+C_SOURCES = $(wildcard Kernel/*.c drivers/*.c CPU/*.c)
+HEADERS = $(wildcard Kernel/*.h drivers/*.h CPU/*.h)
+OBJ = ${C_SOURCES:.c=.o CPU/interrupt.o}
 CC = i386-elf-gcc
 GDB = i386-elf-gdb
 CFLAGS = -g
@@ -18,7 +18,8 @@ boot/boot.bin: boot/32main.asm
 
 boot/kernelentry.o: boot/kernelentry.asm
 	nasm $< -f elf32 -o $@
-
+CPU/interrupt.o: CPU/interrupt.asm
+	nasm $< -f elf32 -o $@
 run: os.bin	
 	qemu-system-i386 -fda os.bin
 
@@ -30,11 +31,11 @@ debug: os.bin kernel.elf
 	${CC} ${CFLAGS} -ffreestanding -c $< -o $@
 
 %.o: %.asm
-	nasm $< -f bin -o $@
+	nasm $< -f elf32 -o $@
 
 %.bin: %.asm
 	nasm $< -f bin -o $@
 
 clean:
 	rm -rf *.bin *.dis *.o os.bin *.elf
-	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o
+	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o CPU/*.o

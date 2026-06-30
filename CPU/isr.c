@@ -13,9 +13,9 @@ void isr_install() {
     set_idt_gate(6, (u32)isr6);
     set_idt_gate(7, (u32)isr7);
     set_idt_gate(8, (u32)isr8);
-    set_idt_gate(9, (u32)isr8);
-    set_idt_gate(10, (u32)isr9);
-    set_idt_gate(11, (u32)isr10);
+    set_idt_gate(9, (u32)isr9);
+    set_idt_gate(10, (u32)isr10);
+    set_idt_gate(11, (u32)isr11);
     set_idt_gate(12, (u32)isr12);
     set_idt_gate(13, (u32)isr13);
     set_idt_gate(14, (u32)isr14);
