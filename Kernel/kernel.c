@@ -1,10 +1,10 @@
-#include "../drivers/screen.h"
-#include "util.h"
 #include "../CPU/isr.h"
-#include "../CPU/idt.h"
+#include "../CPU/timer.h"
+#include "../drivers/keyboard.h"
 
 void main() {
     isr_install();
-    __asm__ __volatile__("int $2");
-    __asm__ __volatile__("int $3");
+    asm volatile("sti");
+    init_timer(50);
+    init_keyboard();
 }
