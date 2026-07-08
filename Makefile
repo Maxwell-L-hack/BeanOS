@@ -1,9 +1,9 @@
-C_SOURCES = $(wildcard Kernel/*.c drivers/*.c CPU/*.c)
-HEADERS = $(wildcard Kernel/*.h drivers/*.h CPU/*.h)
+C_SOURCES = $(wildcard Kernel/*.c drivers/*.c CPU/*.c libc/*.c)
+HEADERS = $(wildcard Kernel/*.h drivers/*.h CPU/*.h libc/*.h)
 OBJ = ${C_SOURCES:.c=.o CPU/interrupt.o}
 CC = i386-elf-gcc
 GDB = i386-elf-gdb
-CFLAGS = -g
+CFLAGS = -g -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -Werror
 
 os.bin: boot/boot.bin kernel.bin
 	cat $^ > os.bin
@@ -38,4 +38,4 @@ debug: os.bin kernel.elf
 
 clean:
 	rm -rf *.bin *.dis *.o os.bin *.elf
-	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o CPU/*.o
+	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o CPU/*.o libc/*.o
